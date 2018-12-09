@@ -110,7 +110,7 @@ fn main() {
     for x in 0..max_x {
         for y in 0..max_y {
             let sum_dist: i32 = coords.iter().enumerate()
-                .map(| (i, c) | { c.dist(Coord{x:x, y:y})}).sum();
+                .map(| (_i, c) | { c.dist(Coord{x:x, y:y})}).sum();
             if sum_dist < 10000 {
                 area_size += 1;
             }

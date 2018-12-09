@@ -31,7 +31,7 @@ fn distance(a: &str, b: &str) -> i32 {
 }
 
 fn common(a: &str, b: &str) -> String {
-    a.chars().into_iter().zip(b.chars()).filter(|(x,y)| x == y).map(|(x,y)| x).collect()
+    a.chars().into_iter().zip(b.chars()).filter(|(x,y)| x == y).map(|(x,_y)| x).collect()
 }
 
 fn main() {

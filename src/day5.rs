@@ -7,7 +7,6 @@ use std::str;
 
 use std::collections::HashMap;
 
-
 fn load_file(file_path: &str) -> String {
     let mut contents = String::new();
     let mut f = File::open(file_path).expect("Unable to open file");
@@ -18,8 +17,8 @@ fn load_file(file_path: &str) -> String {
 }
 
 fn react(bytes: &mut Vec<u8>) -> usize {
-    let mut left_pos = 0; 
-    let mut right_pos = 1; 
+    let mut left_pos = 0;
+    let mut right_pos = 1;
     loop {
         if right_pos >= bytes.len() {
             break;
@@ -39,8 +38,7 @@ fn react(bytes: &mut Vec<u8>) -> usize {
             if right_pos < bytes.len() - 1 {
                 right_pos += 1;
             }
-        }
-        else {
+        } else {
             left_pos += 1;
             while bytes[left_pos] == 42 && left_pos < bytes.len() - 1 {
                 left_pos += 1;
@@ -49,9 +47,7 @@ fn react(bytes: &mut Vec<u8>) -> usize {
         }
     }
 
-    let reacted: Vec<u8> = bytes.iter()
-        .filter(|x| *x != &42u8)
-        .map(|x| *x).collect();
+    let reacted: Vec<u8> = bytes.iter().filter(|x| *x != &42u8).map(|x| *x).collect();
 
     reacted.len()
 }
@@ -74,11 +70,15 @@ fn main() {
 
     let mut map = HashMap::new();
     for s in 65..91 {
-        let mut input: Vec<u8> = bytes.iter().filter(|x| *x != &s && *x != &(s+32) ).map(|x| *x).collect();
+        let mut input: Vec<u8> = bytes
+            .iter()
+            .filter(|x| *x != &s && *x != &(s + 32))
+            .map(|x| *x)
+            .collect();
         let reacted_len = react(&mut input);
         map.insert(s as char, reacted_len);
     }
 
-    let min = map.iter().min_by_key(| &(_, item) | item).unwrap();
+    let min = map.iter().min_by_key(|&(_, item)| item).unwrap();
     println!("Part B answer: shortest fixed polymer is {}", min.1);
 }

@@ -59,7 +59,7 @@ fn main() {
 
     for row in rows.iter() {
         let caps = re.captures(row).unwrap();
-        let hh = caps.get(1).unwrap().as_str();
+        let _hh = caps.get(1).unwrap().as_str();
         let mm = caps.get(2).unwrap().as_str();
         let action = caps.get(3).unwrap().as_str();
 
