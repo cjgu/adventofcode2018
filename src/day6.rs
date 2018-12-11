@@ -1,28 +1,12 @@
 extern crate multiarray;
 
-use std::fs::File;
-use std::io::{BufReader,BufRead};
-
 use std::env;
 use std::process;
 
-use std::collections::{HashMap, HashSet};
+use common::load_file;
+
 use multiarray::Array2D;
-
-fn load_file(file_path: &str) -> Vec<String> {
-    let mut content = vec![]; 
-
-    let f = File::open(file_path).expect("Unable to open file");
-
-    let br = BufReader::new(f);
-
-    for line in br.lines() {
-        let l = line.unwrap();
-        content.push(l);
-    }
-
-    content
-}
+use std::collections::{HashMap, HashSet};
 
 #[derive(Debug)]
 struct Coord {
@@ -37,7 +21,7 @@ impl Coord {
 }
 
 fn main() {
-      let args: Vec<String> = env::args().collect();
+    let args: Vec<String> = env::args().collect();
 
     if args.len() != 2 {
         println!("day6 <file>");
@@ -46,13 +30,17 @@ fn main() {
 
     let rows = load_file(&args[1]);
 
-    let coords: Vec<Coord> = rows.iter()
-        .map(|r| { r.split(", ").collect::<Vec<&str>>() })
-        .map(|c| Coord{x: c[0].parse::<i32>().unwrap(), y: c[1].parse::<i32>().unwrap()})
+    let coords: Vec<Coord> = rows
+        .iter()
+        .map(|r| r.split(", ").collect::<Vec<&str>>())
+        .map(|c| Coord {
+            x: c[0].parse::<i32>().unwrap(),
+            y: c[1].parse::<i32>().unwrap(),
+        })
         .collect();
-    
-    let max_x = coords.iter().map(| c | c.x).max().unwrap();
-    let max_y = coords.iter().map(| c | c.y).max().unwrap();
+
+    let max_x = coords.iter().map(|c| c.x).max().unwrap();
+    let max_y = coords.iter().map(|c| c.y).max().unwrap();
 
     println!("Max: x={} y={}", max_x, max_y);
 
@@ -60,15 +48,17 @@ fn main() {
 
     for x in 0..max_x {
         for y in 0..max_y {
-            let mut distances: Vec<(usize, i32)> = coords.iter().enumerate()
-                .map(| (i, c) | { (i, c.dist(Coord{x:x, y:y}))}).collect();
+            let mut distances: Vec<(usize, i32)> = coords
+                .iter()
+                .enumerate()
+                .map(|(i, c)| (i, c.dist(Coord { x: x, y: y })))
+                .collect();
 
             distances.sort_by_key(|&(_, d)| d);
 
             if distances[0].1 == distances[1].1 {
                 board[[x as usize, y as usize]] = -1;
-            }
-            else {
+            } else {
                 board[[x as usize, y as usize]] = distances[0].0 as i32;
             }
         }
@@ -77,8 +67,8 @@ fn main() {
     let mut sizes = HashMap::new();
     for x in 0..max_x {
         for y in 0..max_y {
-            let id =  board[[x as usize, y as usize]];
-            if  id == -1 {
+            let id = board[[x as usize, y as usize]];
+            if id == -1 {
                 continue;
             }
 
@@ -90,13 +80,13 @@ fn main() {
     let mut infinite_ids = HashSet::new();
     for x in 0..max_x {
         infinite_ids.insert(board[[x as usize, 0]]);
-        infinite_ids.insert(board[[x as usize, (max_y-1) as usize]]);
+        infinite_ids.insert(board[[x as usize, (max_y - 1) as usize]]);
     }
     for y in 0..max_y {
         infinite_ids.insert(board[[0, y as usize]]);
-        infinite_ids.insert(board[[(max_x-1) as usize, y as usize]]);
+        infinite_ids.insert(board[[(max_x - 1) as usize, y as usize]]);
     }
-    // find all ids that face the edge of the board 
+    // find all ids that face the edge of the board
     // exclude them and do a max
 
     let finite_sizes = sizes.iter().filter(|(id, _)| !infinite_ids.contains(id));
@@ -109,13 +99,16 @@ fn main() {
 
     for x in 0..max_x {
         for y in 0..max_y {
-            let sum_dist: i32 = coords.iter().enumerate()
-                .map(| (_i, c) | { c.dist(Coord{x:x, y:y})}).sum();
+            let sum_dist: i32 = coords
+                .iter()
+                .enumerate()
+                .map(|(_i, c)| c.dist(Coord { x: x, y: y }))
+                .sum();
             if sum_dist < 10000 {
                 area_size += 1;
             }
         }
     }
 
-     println!("Part 2: Area is  {}", area_size);
+    println!("Part 2: Area is  {}", area_size);
 }
